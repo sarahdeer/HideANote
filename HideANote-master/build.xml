@@ -1,0 +1,231 @@
+<!--
+// HideANote- java auto hide note thingy
+// Copyright 2016 by Sarah J. Deer
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+-->
+
+<project name="HideANote" default="info" basedir=".">
+
+	<property name="version" value="1.0.1" />
+    <property name="name" value="HideANote-" />
+    <property name="src" value="src" />
+	<property name="resources" value="resources" />
+    <property name="build" value="build" />
+    <property name="build.classes" value="${build}/classes" />
+    <property name="build.doc" value="${build}/api" />
+    <property name="build.dist" value="${build}/dist" />
+    <property name="build.tmp" value="${build}/tmp" />
+    <property name="build.staging" value="${build}/dist/${name}"/>
+    <property name="packagenames" value="com.Sarah.*" />
+    <property name="sunjdocurl" value="http://java.sun.com/javase/6/docs/api/" />
+    <property name="jarfile" value="${name}.jar" />
+	<property name="tarball" value="${name}.tar.gz"/>
+	<property name="launch4j.dir" location="${basedir}/launch4j" />
+	
+	<path id="classpath">
+        <pathelement path="${build.classes}" />
+    </path>
+
+	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" 
+		classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+	
+	<taskdef name="jarbundler2" classpath="${basedir}/lib/jarbundler-2.0.0.jar" 
+	         classname="net.sourceforge.jarbundler.JarBundler" />
+
+    <taskdef name="jarbundler"
+        classpath="${basedir}/lib/jarbundler.jar"
+        classname="com.loomcom.ant.tasks.jarbundler.JarBundler"
+    />
+
+    <taskdef name="dmg"
+        classpath="${basedir}/lib/osxant.jar"
+        classname="com.amberarcher.ant.osx.DmgTask"
+    />	
+	
+	<taskdef name="IzPack" classpath="${basedir}/lib/standalone-compiler.jar"
+	         classname="com.izforge.izpack.ant.IzPackTask"/>
+
+    <!-- The default target should always be a safe operation! -->
+    <target name="info" >
+		<echo message="Please invoke ant with an appropriate target. (ant -p will list them)"/>
+	</target>
+
+    <target name="all" depends="clean,javadoc,jar">
+    </target>
+
+    <target name="dist-staging">
+        <antcall target="clean">
+            <param name="clean.dir" value="${build.staging}"/>
+        </antcall>
+    </target>
+
+  	<target name="init">
+        <tstamp />
+        <mkdir dir="${build}" />
+        <mkdir dir="${build.classes}" />
+        <mkdir dir="${build.doc}" />
+        <mkdir dir="${build.tmp}" />
+        <mkdir dir="${build.dist}" />
+        <mkdir dir="${build.staging}"/>    	
+    </target>
+
+    <target name="clean">
+    	<condition property="clean.dir" value="${clean.dir}" else="${build}">
+            <isset property="clean.dir" />
+        </condition>
+
+        <delete dir="${clean.dir}" />
+        <antcall target="init" />
+    </target>
+
+    <target name="compile" depends="init">
+        <condition property="compile.target" value="${compile.target}" else="debug">
+            <isset property="compile.target" />
+        </condition>
+
+        <echo message="Compiling target '${compile.target}'" />
+
+        <condition property="compile.debug" value="true" else="false">
+            <equals arg1="${compile.target}" arg2="debug" />
+        </condition>
+
+        <condition property="compile.optimize" value="false" else="true">
+            <equals arg1="${compile.target}" arg2="debug" />
+        </condition>
+
+        <condition property="compile.deprecation" value="true" else="false">
+            <equals arg1="${compile.target}" arg2="debug" />
+        </condition>
+
+        <javac classpathref="classpath" srcdir="${src}" destdir="${build.classes}" debug="${compile.debug}" optimize="${compile.optimize}" deprecation="${compile.deprecation}">
+    		<compilerarg value="-Xlint:unchecked" />
+    	</javac>
+
+    </target>
+
+    <target name="javadoc">
+        <antcall target="clean">
+            <param name="clean.dir" value="${build.doc}" />
+        </antcall>
+
+        <javadoc sourcepath="${src}" link="${sunjdocurl}" use="true" destdir="${build.doc}" doctitle="${name}" windowtitle="${name} API" package="true" author="false" version="true" packagenames="${packagenames}" classpathref="classpath" />
+    </target>
+
+    <target name="jar">
+
+        <antcall target="clean">
+            <param name="clean.dir" value="${build.classes}" />
+        </antcall>
+
+        <antcall target="clean">
+            <param name="clean.dir" value="${build.tmp}" />
+        </antcall>
+
+        <antcall target="compile" />
+
+        <jar jarfile="${build.dist}/${jarfile}" compress="true" update="false">
+
+            <manifest>
+                <attribute name="Built-By" value="zooty, zoot zoot" />
+                <attribute name="Timestamp" value="${DSTAMP}" />
+                <attribute name="Main-Class" value="com.xorcyst.jpeekaboo.Main" />
+            </manifest>
+
+            <fileset dir="${build.tmp}" />
+            <fileset dir="${build}/classes" />
+        	<fileset dir="${resources}" />
+        </jar>
+
+    </target>
+	
+    <target name="run" depends="jar">
+        <exec executable="java">
+            <arg value="-jar"/>
+            <arg value="${build.dist}/${jarfile}"/>
+        </exec>
+    </target>
+
+    <!-- MUST BE BUILT ON WINDOWS -->	
+    <target name="dist-windows" depends="jar">
+		<launch4j configFile="${basedir}/HideANote-l4j.xml" />	
+	</target>
+
+    <!-- MUST BE BUILT ON WINDOWS -->	
+    <target name="installer-jar-windows" depends="dist-windows">
+        <IzPack input="${basedir}/windows-installer.xml"
+                output="${build.dist}/${name}-installer.jar"
+                installerType="standard"
+        	    inheritAll="true"
+                basedir="${basedir}" />
+    </target>
+    	
+    <!-- MUST BE BUILT ON WINDOWS -->	
+    <target name="installer-windows" depends="installer-jar-windows">
+        <launch4j configFile="${basedir}/installer-l4j.xml" />  
+    </target>
+	
+    <target name="dist-linux" depends="jar">
+        <antcall target="dist-staging"/>
+
+        <delete file="${build.dist}/${tarball}"/>
+
+        <copy todir="${build.staging}">
+           <fileset file="${resources}/HideANote.sh" />
+           <fileset file="${build.dist}/${jarfile}"/>
+        </copy>
+
+        <tar destfile="${build.dist}/${tarball}"
+            compression="gzip">
+            <tarfileset dir="${build.staging}" prefix="${name}"/>
+        </tar>
+
+    	<delete dir="${build.staging}"/>
+    </target>
+
+    <!-- MUST BE BUILT ON OSX -->	
+    <target name="dist-osx" depends="jar">
+        <delete dir="${build.dist}/${name}.app"/>
+
+        <jarbundler
+            jars="${build.dist}/${jarfile}"
+            dir="${build.dist}"
+            verbose="true"
+            name="${name}"
+            infostring="${HideANote} ${version}, Copyright 2016 Sarah J. Deer"
+            icon="${resources}/tray.icns"
+            mainclass="com.Sarah.${name}.Main"
+            aboutmenuname="${name}"
+            jvmversion="1.6+"
+            bundleid="${name}"
+            antialiasedgraphics="true"
+            antialiasedtext="true"
+            liveresize="false"
+            growboxintrudes="false"
+        />
+
+        <dmg destfile="${build.dist}/${name}.dmg"
+            name="${name}"
+            compressed="true"
+            srcdir="${build.dist}/${name}.app"/>
+
+        <delete dir="${build.dist}/${name}.app"/>
+    </target>
+    
+    <target name="dist" depends="dist-osx,dist-linux,installer-windows">
+    </target>
+	
+</project>
+

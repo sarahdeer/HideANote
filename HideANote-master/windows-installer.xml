@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+
+<!-- 
+//
+// HideANote - java auto hide note thingy
+// Copyright 2016 by Sarah J. Deer
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+-->
+
+<installation version="1.0">
+
+    <info>
+        <appname>HelloPanel</appname>
+        <appversion>1.0</appversion>
+        <authors>
+            <author name="Sarah J. Deer" email="sarahdeer121@gmail.com"/>
+        </authors>
+        <url>http://https://github.com/sarahdeer/</url>
+    </info>
+
+    <guiprefs width="640" height="480" resizable="no" />
+
+    <locale>
+        <langpack iso3="eng"/>
+    </locale>
+
+    <resources>
+        <res id="LicencePanel.licence" src="License.txt"/>
+        <res id="InfoPanel.info" src="Readme.txt"/>
+    </resources>
+
+    <panels>
+        <panel classname="HelloPanel"/>
+        <panel classname="InfoPanel"/>
+        <panel classname="LicencePanel"/>
+        <panel classname="TargetPanel"/>
+        <panel classname="PacksPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="FinishPanel"/>
+    </panels>
+
+    <packs>
+        <pack name="Application" required="yes">
+            <description>required files</description>
+            <file src="Readme.txt" targetdir="$INSTALL_PATH"/>
+            <file src="License.txt" targetdir="$INSTALL_PATH"/>
+            <file src="build/dist/HideANote.exe" targetdir="$INSTALL_PATH"/>
+        </pack>
+    </packs>
+
+</installation>

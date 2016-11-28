@@ -1,0 +1,47 @@
+<!--
+// HideANote - java auto hide note thingy
+// Copyright 2016 by Sarah J. Deer
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+-->
+
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <jar>build/dist/HideANote-installer.jar</jar>
+  <outfile>build/dist/HideANote-installer.exe</outfile>
+
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0.0</txtFileVersion>
+    <fileDescription>HideANote installer</fileDescription>
+    <copyright>Copyright 2016 Sarah J. Deer</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0.0</txtProductVersion>
+    <productName>HideANote</productName>
+    <companyName>Sarah J. Deer</companyName>
+    <internalName>HideANote</internalName>
+    <originalFilename>HideANote.exe</originalFilename>
+  </versionInfo>
+
+  <errTitle>HideANote</errTitle>
+  <chdir>.</chdir>
+  <customProcName>true</customProcName>
+  <icon>resources/tray.ico</icon>
+
+  <jre>
+    <minVersion>1.6.0</minVersion>
+  </jre>
+
+</launch4jConfig>

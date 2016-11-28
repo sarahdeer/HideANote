@@ -1,0 +1,26 @@
+V2
+
+* sync offsite, saves local, syncs to remote
+
+* settings
+** sync settings
+** pinning
+** color chooser
+** font chooser
+** remember width
+
+* resizing
+** corners
+** width
+*** right side triggered
+** add height resizing, stays centered though, must hold ctrl to perform
+*** top triggered
+*** bottom triggered
+
+* external strings for prog name etc.
+
+* cleanup
+** refactor dialogs, lots of duplication at present
+** popups for failures (exception handling!)
+
+* internationalization
